@@ -1,41 +1,54 @@
-# 🩺 ai-doctor
+# 🔍 ai-doctor — AI 接口验货机
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](CHANGELOG.md)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.8%2B-yellow)](#)
-[![Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen)](#)
+**花钱买的 AI 接口，先验货，再掏钱。**
 
-[English](README_EN.md) · [更新日志](CHANGELOG.md) · [常见问题](docs/faq.md)
+中转站、聚合站满天飞：标着旗舰模型卖你降级货、限速不说、JSON 模式假支持……这个工具就是干这个的——拿你的 key 跑一圈，把接口验个明明白白。
 
-**一条命令，给你的 AI 接口做一次全身体检，最后打个分。**
+## 先看验货现场
 
-买的中转、聚合站、自建网关到底稳不稳、快不快、是不是真模型？跑一遍就知道。
+```
+$ AI_DOCTOR_KEY=sk-xxxx python3 ai_doctor.py --base https://api.example.com/v1 --model gpt-4o-mini
 
-```bash
-AI_DOCTOR_KEY=sk-xxxx python3 ai_doctor.py --base https://api.openai.com/v1 --model gpt-4o-mini
+🩺 ai-doctor v1.0.0  接口体检：https://api.example.com/v1
+──────────────────────────────────────────────
+✓ 模型列表可达（212 ms），共 31 个模型
+✓ 对话可用，返回：'pong'
+  延迟  最快 480 ms · 中位 620 ms · 最慢 910 ms
+✓ 流式可用：首字 390 ms · 约 42.0 chunks/s
+✓ JSON 模式可用
+✓ 长上下文可用：一次吃下 10350 tokens
+──────────────────────────────────────────────
+体检评分：100 / 100 — S · 极品
 ```
 
-## 测什么
+## 验货清单
 
-| 项目 | 内容 |
-| --- | --- |
-| 连通性 | 模型列表端点可达性与延迟、模型总数 |
-| 对话质量 | 连测 3 次：最快/中位/最慢延迟、token 用量回执 |
-| 流式速度 | 首字时间（TTFT）、每秒输出块数——打字机快慢一眼见分晓 |
-| JSON 模式 | 是否真支持结构化输出，还是假装支持 |
-| 长上下文 | 一次喂 ~4 万字符，看它吃不吃得下、回执多少 token |
-| 评分 | 百分制扣分，S–D 评级；`--json` 输出机器可读报告 |
+- 🧾 **对不对版** — 模型列表里到底有哪些货，跟商家说的对不对得上
+- ⏱ **快不快** — 连测三次取中位延迟，不被偶然一次快慢骗
+- ⌨️ **打字机速度** — 流式首字时间和输出速度，聊天卡不卡全看这个
+- 🧩 **JSON 是不是真的** — 有的站嘴上支持结构化输出，实际直接忽略参数
+- 📚 **胃口多大** — 一次喂四万字，看它吃得下吃不下、回执 token 数对不对
+- 🏅 **最后打分** — 百分制，S 到 D，买之前心里有数
 
-## 设计原则
+## 怎么用
 
-- **零依赖**：只用 Python 标准库，任何机器 `python3` 就能跑
-- **不存密钥**：key 只从参数/环境变量读，用完即走，绝不落盘
-- **兼容一切 OpenAI 格式接口**：官方、Azure、中转站、聚合站、本地 Ollama/LM Studio 网关
+```bash
+git clone https://github.com/yztutu/ai-doctor && cd ai-doctor
+AI_DOCTOR_KEY=你的key python3 ai_doctor.py --base 接口地址 --model 模型名
+```
 
-## 姊妹项目
+不用装任何东西，Python 自带的库就够了。key 只在你自己机器上用，不保存、不上传（源码就一个文件，随便看）。
 
-[server-doctor](https://github.com/yztutu/server-doctor) — 给服务器做体检的那个。
+官方接口、中转、聚合、本地 Ollama 网关，只要是 OpenAI 兼容格式都能验。
+
+## 常见疑问
+
+**验出分低就是商家骗人吗？**
+不一定。晚高峰谁都慢，换个时间再验一次；但模型列表对不上、JSON 假支持这种，就是实打实的问题了。
+
+**跟 server-doctor 啥关系？**
+一个作者的两个工具：[那个](https://github.com/yztutu/server-doctor)验服务器，这个验 AI 接口。
 
 ## License
 
-MIT
+MIT，随便用。
